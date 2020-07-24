@@ -10,27 +10,24 @@ const GameOfLife = function(){
     this.newGrid = this.fillNewGrid(this.grid, this.copy);
     console.log(this.newGrid);
 };
-
+/**
+ * grid layout in rows, multidimensional array
+ */
 GameOfLife.prototype.grid = function(){
     let grd = [
-        [0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        [0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,1,0,0,0,0],
+        [1,0,1,0,0,0,0],
+        [0,1,1,0,0,0,0],
+        [0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0]
     ];
     return grd;
 };
-
+/**
+ * makes a copy of the original grid
+ * @param grid this.grid (returned bij grid())
+ */
 GameOfLife.prototype.copyGridStructure = function(grid){
     let nwGrd = new Array(grid.length);
     for (let i = 0; i < grid.length;i++){
@@ -38,7 +35,11 @@ GameOfLife.prototype.copyGridStructure = function(grid){
     }
     return nwGrd;
 }; 
-
+/**
+ * makes a copy of the original grid
+ * @param grid this.grid
+ * @param newGrid is a new array, copied from grid
+ */
 GameOfLife.prototype.fillNewGrid = function(grid, newGrid){
     for (let i=0; i<grid.length;i++){
         for (let j=0; j<grid[i].length; j++)
@@ -46,25 +47,33 @@ GameOfLife.prototype.fillNewGrid = function(grid, newGrid){
     }
     return newGrid;
 };
-
+/**
+ * checks every direct and diagonal neighbour in grid looping throuh array
+ * counts neiggbours if 1
+ * depending counts a value is assigned to current position
+ */
 GameOfLife.prototype.neighbourCheck = function(){
-    for (let x = 0; x < this.grid.length; x++){
+    for (let x = 0;  x < this.grid.length; x++){
+        let xLength = this.grid.length;
         for (let y = 0; y < this.grid[x].length; y++){
+            let yLength = this.grid[x].length;
             let count = 0;
             for (let dx = -1; dx <= 1; dx++){
+                    neighbourX = (x + dx) % xLength; 
+                    if (neighbourX < 0)
+                        neighbourX += xLength;
                 for (let dy = -1; dy <= 1; dy++){
+                    neighbourY = (y + dy)% yLength;
+                    if (neighbourY < 0)
+                        neighbourY += yLength;
                     if (dx === 0 && dy === 0){
-                        console.log("00000", this.grid[dx + x][dy + y]);
-                    }
+                        }
                     else if 
-                        (this.grid[dx + x] != undefined 
-                        && this.grid[dx + x][dy + y] != undefined 
-                        && this.grid[dx + x][dy + y]){
+                        (this.grid[neighbourX][neighbourY]){ 
                             count++;
-                            console.log(this.grid[dx + x][dy + y]);
-                        }    
-                }
-            }
+                    } 
+                } 
+            }           
             let value = this.grid[x][y];
             switch(count){
                 case 0:
@@ -72,23 +81,23 @@ GameOfLife.prototype.neighbourCheck = function(){
                 case 1:
                     value = 0;
                     break;
-                //waarde 0 blijft 0 en waarde 1 blijft 1 als count is 2
                 case 2:
-                    break;
+                   break;
                 case 3:
                     value = 1;
                     break;
                 default:
                     value = 0;
             }
-            this.newGrid[x][y] = value;    
+            this.newGrid[x][y] = value;      
         }
     }
-    //console.log(this.newGrid);
     this.changeGrid();
     this.draw();
 };
-
+/**
+ * grid changes according changes made in newGrid
+ */
 GameOfLife.prototype.changeGrid = function(){
     for (let x = 0; x < this.newGrid.length; x++){
       for (let y = 0; y < this.newGrid[x].length; y++){
@@ -96,7 +105,9 @@ GameOfLife.prototype.changeGrid = function(){
       }
     }
   };
-
+/**
+ * grid will be drawn on canvas
+ */
 GameOfLife.prototype.draw = function(){
     for (let x = 0; x < this.grid.length; x++)
         for (let y = 0; y < this.grid[x].length; y++){
@@ -109,13 +120,17 @@ GameOfLife.prototype.draw = function(){
             this.context.fillRect(x * 25, y * 25, 25, 25);
         }
 };
-
+/**
+ * starts simulatiom
+ */
 GameOfLife.prototype.start = function(){
     this.begin = setInterval(this.neighbourCheck.bind(this),1000);
 };
-
+/**
+ * ends simulatiom
+ */
 GameOfLife.prototype.end = function(){
     clearInterval(this.begin);
 };
 
-let game = new GameOfLife();
+let gae = new GameOfLife();
